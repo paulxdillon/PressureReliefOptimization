@@ -1,0 +1,85 @@
+---
+title: "Pressure Relief Optimization"
+format:
+  html:
+    code-fold: false 
+    #code-fold: true
+jupyter: python3
+toc: true
+number-sections: true
+highlight-style: pygments
+---
+## Shapes
+
+- Squares
+- Circle
+- Triangle
+
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import pyomo.environ as pyo
+import pandas as pd
+from ast import literal_eval as make_tuple
+import networkx as nx
+
+from pyomo.environ import SolverFactory
+SOLVER = SolverFactory('glpk')
+```
+Formulate model
+## Colors
+- Red
+- Green 
+- Blue
+```{python}
+import pyomo.environ as pyo
+
+m = pyo.ConcreteModel("Multi-Product Factory")
+
+# decision variables
+m.profit = pyo.Var()
+m.production_x = pyo.Var(domain=pyo.NonNegativeReals)
+m.production_y = pyo.Var(domain=pyo.NonNegativeReals)
+
+# profit objective
+@m.Objective(sense=pyo.maximize)
+def maximize_profit(model):
+    return  m.profit
+
+# constraints
+@m.Constraint()
+def profit_expr(model):
+    return m.profit == 40*m.production_x + 30*m.production_y
+
+@m.Constraint()
+def demand(model):
+    return m.production_x <= 40
+
+@m.Constraint()
+def laborA(model):
+    return m.production_x + m.production_y <= 80
+
+@m.Constraint()
+def laborB(model):
+    return 2*m.production_x + m.production_y <= 100
+
+SOLVER.solve(m)
+
+print(f"Profit = {m.profit():.3f} €")
+print(f"Production X = {m.production_x()}")
+print(f"Production Y = {m.production_y()}")
+```
+```{mermaid}
+flowchart LR
+  A[Hard edge] --> B(Round edge)
+  B --> C{Decision}
+  C --> D[Result one]
+  C --> E[Result two]
+```
+
+## Textures
+
+- Smooth
+- Bumpy
+- Fuzzy
